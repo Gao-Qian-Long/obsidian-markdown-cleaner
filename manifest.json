@@ -1,0 +1,12 @@
+{
+	"id": "obsidian-markdown-cleaner",
+	"name": "Markdown Cleaner",
+	"version": "01.19",
+	"minAppVersion": "0.15.0",
+	"description": "清理文本中多余的 Markdown 格式符号，特别是去除多余的 ** 符号",
+	"author": "Pocketter",
+	"authorUrl": "",
+	"fundingUrl": "",
+	"isDesktopOnly": false,
+	"keywords": ["markdown", "cleaner", "formatting", "editor"]
+}

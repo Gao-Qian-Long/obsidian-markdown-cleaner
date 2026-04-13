@@ -1,0 +1,25 @@
+{
+	"name": "obsidian-markdown-cleaner",
+	"version": "1.0.0",
+	"description": "清理文本中多余的 Markdown 格式符号",
+	"main": "main.js",
+	"scripts": {
+		"dev": "node esbuild.config.mjs --development",
+		"build": "node esbuild.config.mjs --production",
+		"version": "node esbuild.config.mjs --version"
+	},
+	"keywords": [
+		"obsidian",
+		"plugin",
+		"markdown",
+		"cleaner"
+	],
+	"author": "",
+	"license": "MIT",
+	"devDependencies": {
+		"@types/node": "^16.11.6",
+		"esbuild": "^0.14.47",
+		"obsidian": "latest",
+		"typescript": "^4.7.4"
+	}
+}
