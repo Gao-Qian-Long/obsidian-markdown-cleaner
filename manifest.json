@@ -1,12 +1,12 @@
 {
 	"id": "obsidian-markdown-cleaner",
 	"name": "Markdown Cleaner",
-	"version": "01.19",
+	"version": "1.1.0",
 	"minAppVersion": "0.15.0",
-	"description": "清理文本中多余的 Markdown 格式符号，特别是去除多余的 ** 符号",
-	"author": "Pocketter",
-	"authorUrl": "",
+	"description": "清理文本中多余的 Markdown 格式符号，自动转换 LaTeX 数学公式为 Obsidian 兼容格式",
+	"author": "Gao-Qian-Long",
+	"authorUrl": "https://github.com/Gao-Qian-Long",
 	"fundingUrl": "",
 	"isDesktopOnly": false,
-	"keywords": ["markdown", "cleaner", "formatting", "editor"]
+	"keywords": ["markdown", "cleaner", "formatting", "editor", "math", "latex"]
 }
