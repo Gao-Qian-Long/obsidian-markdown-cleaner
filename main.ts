@@ -24,14 +24,13 @@ export default class MarkdownCleanerPlugin extends Plugin {
 	settings!: CleanerSettings;
 
 	async onload() {
-		console.log('Markdown Cleaner: plugin loading');
+		console.debug('Markdown Cleaner: plugin loading');
 		await this.loadSettings();
-		console.log('Markdown Cleaner: settings loaded', this.settings);
+		console.debug('Markdown Cleaner: settings loaded');
 
 		// 注册粘贴事件监听器
 		this.registerEvent(
 			this.app.workspace.on('editor-paste', (evt: ClipboardEvent, editor: Editor) => {
-				console.log('Markdown Cleaner: editor-paste event captured');
 				this.handlePaste(evt, editor);
 			})
 		);
@@ -39,10 +38,8 @@ export default class MarkdownCleanerPlugin extends Plugin {
 		// 添加快捷键命令
 		this.addCommand({
 			id: 'clean-markdown-format',
-			name: '清理 Markdown 格式',
-			hotkeys: this.settings.enableHotkey
-				? [{ modifiers: ['Mod', 'Shift'], key: 'M' }]
-				: [],
+			name: 'Clean Markdown format',
+			hotkeys: [],
 			editorCheckCallback: (checking: boolean, editor: Editor) => {
 				if (checking) return true;
 				this.cleanSelection(editor);
@@ -51,7 +48,7 @@ export default class MarkdownCleanerPlugin extends Plugin {
 
 		// 添加设置界面
 		this.addSettingTab(new CleanerSettingTab(this.app, this));
-		console.log('Markdown Cleaner: plugin loaded successfully');
+		console.debug('Markdown Cleaner: plugin loaded successfully');
 	}
 
 	async loadSettings() {
@@ -82,56 +79,38 @@ export default class MarkdownCleanerPlugin extends Plugin {
 
 	// 处理粘贴事件
 	handlePaste(evt: ClipboardEvent, editor: Editor): void {
-		console.log('Markdown Cleaner: paste event triggered');
-		
 		// 首先检查是否需要处理
 		if (!this.settings.autoCleanOnPaste) {
-			console.log('Markdown Cleaner: autoCleanOnPaste is false');
 			return;
 		}
 		
 		const clipboardData = evt.clipboardData;
 		if (!clipboardData) {
-			console.log('Markdown Cleaner: no clipboardData');
 			return;
 		}
 		
-		console.log('Markdown Cleaner: clipboardData.types:', Array.from(clipboardData.types));
-		
 		if (clipboardData.files && clipboardData.files.length > 0) {
-			console.log('Markdown Cleaner: clipboard contains files');
 			return;
 		}
 		
 		const pastedText = clipboardData.getData('text/plain');
 		if (!pastedText) {
-			console.log('Markdown Cleaner: no text/plain data');
 			return;
 		}
-		
-		console.log('Markdown Cleaner: pasted text length:', pastedText.length);
-		console.log('Markdown Cleaner: pasted text (first 100 chars):', JSON.stringify(pastedText.substring(0, Math.min(100, pastedText.length))));
 		
 		// 转换数学公式
 		let convertedText = pastedText;
 		if (this.settings.convertMathFormulas) {
 			convertedText = this.convertMathFormulas(pastedText);
-			console.log('Markdown Cleaner: converted text length:', convertedText.length);
-			console.log('Markdown Cleaner: converted text (first 100 chars):', JSON.stringify(convertedText.substring(0, Math.min(100, convertedText.length))));
 		}
 		
 		// 清理格式
 		const cleaned = this.cleanMarkdown(convertedText);
-		console.log('Markdown Cleaner: cleaned text length:', cleaned.length);
-		console.log('Markdown Cleaner: cleaned !== original?', cleaned !== pastedText);
 		
 		if (cleaned !== pastedText) {
-			console.log('Markdown Cleaner: text changed, preventing default and inserting cleaned text');
-			
 			// 阻止默认粘贴行为
 			evt.preventDefault();
 			evt.stopPropagation();
-			console.log('Markdown Cleaner: event default prevented');
 			
 			try {
 				// 获取当前光标位置
@@ -144,7 +123,6 @@ export default class MarkdownCleanerPlugin extends Plugin {
 				const replaceFrom = hasSelection ? from : cursor;
 				const replaceTo = hasSelection ? to : cursor;
 				
-				console.log('Markdown Cleaner: replacing range from', replaceFrom, 'to', replaceTo);
 				editor.replaceRange(cleaned, replaceFrom, replaceTo);
 				
 				// 设置光标位置
@@ -156,61 +134,38 @@ export default class MarkdownCleanerPlugin extends Plugin {
 				};
 				editor.setCursor(newCursor);
 				
-				console.log('Markdown Cleaner: cleaned and inserted at cursor position');
-				
 				if (this.settings.showNotification) {
 					new Notice('已自动清理粘贴内容的格式');
 				}
 			} catch (error) {
 				console.error('Markdown Cleaner: error replacing text:', error);
-				console.log('Markdown Cleaner: insertion failed, default already prevented');
 			}
-		} else {
-			console.log('Markdown Cleaner: no changes needed, allowing default paste behavior');
 		}
 	}
 
 	// 转换数学公式
 	private convertMathFormulas(text: string): string {
-		console.log('Markdown Cleaner: converting math formulas');
-		console.log('Markdown Cleaner: original text length:', text.length);
-		console.log('Markdown Cleaner: original text (first 200 chars):', JSON.stringify(text.substring(0, Math.min(200, text.length))));
-		
 		let result = text;
 		
 		// 1. 转换显示公式 \[...\] -> $$...$$
-		// 匹配模式：\\[内容\\]（跨行匹配）
-		console.log('Markdown Cleaner: converting display math formulas \\[...\\]');
 		result = result.replace(/\\\[([\s\S]*?)\\\]/g, (match, content) => {
-			console.log('Markdown Cleaner: found display math formula, length:', match.length);
-			// 使用函数返回正确的格式：$$内容$$
 			return '$$' + content + '$$';
 		});
 		
 		// 2. 转换行内公式 \(...\) -> $...$
-		console.log('Markdown Cleaner: converting inline math formulas \\(...\\)');
-		// 使用非贪婪匹配，正确处理转义，并去除公式前后的空白
 		result = result.replace(/\\\(\s*((?:\\.|[^\\])*?)\s*\\\)/g, (match, content) => {
-			console.log('Markdown Cleaner: found inline math formula:', match.substring(0, Math.min(50, match.length)));
-			// 使用函数返回正确的格式：$内容$，并去除内容中的首尾空白
 			return '$' + content.trim() + '$';
 		});
 		
 		// 3. 确保已有的 $$...$$ 格式正确
-		console.log('Markdown Cleaner: ensuring $$...$$ format');
 		result = result.replace(/\$\$([\s\S]+?)\$\$/g, (match, content) => {
 			return '$$' + content + '$$';
 		});
 		
 		// 4. 确保已有的 $...$ 格式正确（避免重复转换）
-		console.log('Markdown Cleaner: ensuring $...$ format');
 		result = result.replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, (match, content) => {
 			return '$' + content + '$';
 		});
-		
-		console.log('Markdown Cleaner: converted text length:', result.length);
-		console.log('Markdown Cleaner: converted text (first 200 chars):', JSON.stringify(result.substring(0, Math.min(200, result.length))));
-		console.log('Markdown Cleaner: conversion complete');
 		
 		return result;
 	}
@@ -330,11 +285,14 @@ class CleanerSettingTab extends PluginSettingTab {
 	display(): void {
 		const { containerEl } = this;
 		containerEl.empty();
-		containerEl.createEl('h2', { text: 'Markdown Cleaner 设置' });
 
 		new Setting(containerEl)
-			.setName('粘贴时自动清理')
-			.setDesc('开启后，粘贴内容时自动清理多余的格式符号')
+			.setName('Markdown Cleaner')
+			.setHeading();
+
+		new Setting(containerEl)
+			.setName('Auto clean on paste')
+			.setDesc('Automatically clean excess formatting when pasting content')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.autoCleanOnPaste)
 				.onChange(async (value) => {
@@ -343,8 +301,8 @@ class CleanerSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName('启用快捷键')
-			.setDesc('开启后使用 Ctrl+Shift+M 快捷键清理选中文本（修改后需重启 Obsidian 生效）')
+			.setName('Enable hotkey')
+			.setDesc('Enable Ctrl+Shift+M hotkey to clean selected text (requires restart to take effect)')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.enableHotkey)
 				.onChange(async (value) => {
@@ -353,8 +311,8 @@ class CleanerSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName('显示通知')
-			.setDesc('清理完成后显示通知提示')
+			.setName('Show notification')
+			.setDesc('Display a notification when cleaning is complete')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.showNotification)
 				.onChange(async (value) => {
@@ -363,8 +321,8 @@ class CleanerSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName('转换数学公式')
-			.setDesc('开启后自动转换 LaTeX 数学公式（\\[...\\] 和 \\(...\\)）为 $...$ 和 $$...$$ 格式')
+			.setName('Convert math formulas')
+			.setDesc('Automatically convert LaTeX formulas (\\(...\\) and \\[...\\]) to $...$ and $$...$$ format')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.convertMathFormulas)
 				.onChange(async (value) => {
