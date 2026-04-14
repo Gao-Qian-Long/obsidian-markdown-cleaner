@@ -17,7 +17,7 @@ A powerful Obsidian plugin for cleaning Markdown formatting and intelligently co
 ### Markdown Format Cleaning
 - **Smart Cleaning**: Automatically identifies and cleans excess `**`, `__` and other formatting symbols
 - **Preserve Valid Formats**: Keeps normal bold `**bold**` and italic `*italic*` unchanged
-- **Hotkey Operation**: Use `Ctrl+Shift+M` (or `Cmd+Shift+M`) to quickly clean selected text
+- **Customizable Hotkey**: Set your own hotkey in Obsidian Settings → Hotkeys (search for "Clean Markdown format")
 - **Paste Auto-Cleaning**: Automatically cleans excess formatting in pasted content when enabled
 
 ### Math Formula Conversion
@@ -45,14 +45,18 @@ npm run build
 ### Enable Plugin
 1. Open Obsidian Settings
 2. Go to `Third-party plugins` → `Markdown Cleaner`
-3. Enable features as needed:
+3. Configure features as needed:
    - ✅ Auto-clean on paste
    - ✅ Show notification
-   - ✅ Enable hotkey
    - ✅ Convert math formulas
 
+### Set Hotkey
+1. Go to `Settings` → `Hotkeys`
+2. Search for "Clean Markdown format"
+3. Click to set your preferred hotkey
+
 ### Quick Start
-- **Hotkey**: Select text → Press `Ctrl+Shift+M`
+- **Hotkey**: Select text → Press your configured hotkey
 - **Paste**: Automatically cleans and converts formulas
 
 ## 🔢 Math Formula Conversion
@@ -74,7 +78,7 @@ npm run build
 | Setting | Default | Description |
 |---------|---------|-------------|
 | Auto-clean on paste | Enabled | Auto-clean when pasting |
-| Enable hotkey | Enabled | `Ctrl+Shift+M` |
+| Show notification | Enabled | Display notification when cleaning |
 | Convert math formulas | Enabled | LaTeX conversion |
 
 ## ❓ FAQ
@@ -84,10 +88,15 @@ npm run build
 2. Ensure using `\(...\)` or `\[...\]` format
 3. Restart Obsidian
 
+### Q: How to set hotkey?
+1. Go to Settings → Hotkeys
+2. Search for "Clean Markdown format"
+3. Click and press your desired key combination
+
 ### Q: Hotkey not working?
-1. Check if "Enable hotkey" is enabled
+1. Make sure you've set a hotkey in Settings → Hotkeys
 2. Restart Obsidian
-3. Check for conflicts
+3. Check for conflicts with other plugins
 
 ## 🛠️ Development
 
@@ -118,6 +127,9 @@ obsidian-markdown-cleaner/
 - 🐛 Fixed: Regex matching issues
 - 📝 Updated: Complete documentation
 
+### v1.0.x
+- Initial release with Markdown format cleaning
+
 ## 🤝 Contributing
 
 Welcome! Submit Issues and Pull Requests.
@@ -144,7 +156,7 @@ MIT License
 ### Markdown 格式清理
 - **智能清理**：自动识别并清理多余的 `**`、`__` 等格式符号
 - **保留有效格式**：保持正常的加粗 `**bold**`、斜体 `*italic*` 不变
-- **快捷键操作**：`Ctrl+Shift+M`（或 `Cmd+Shift+M`）快速清理选中文本
+- **自定义快捷键**：在 Obsidian 设置 → 快捷键中设置你自己的快捷键（搜索 "Clean Markdown format"）
 - **粘贴自动清理**：开启后可自动清理粘贴内容中的多余格式
 
 ### 数学公式转换
@@ -172,14 +184,18 @@ npm run build
 ### 启用插件
 1. 打开 Obsidian 设置
 2. 进入 `第三方插件` → `Markdown Cleaner`
-3. 根据需要开启功能：
+3. 根据需要配置功能：
    - ✅ 粘贴时自动清理
    - ✅ 显示通知
-   - ✅ 启用快捷键
    - ✅ 转换数学公式
 
+### 设置快捷键
+1. 进入 `设置` → `快捷键`
+2. 搜索 "Clean Markdown format"
+3. 点击设置你想要的快捷键
+
 ### 快速开始
-- **快捷键**：选中文本 → 按 `Ctrl+Shift+M`
+- **快捷键**：选中文本 → 按你设置的快捷键
 - **粘贴**：自动清理并转换公式
 
 ## 🔢 数学公式转换
@@ -201,7 +217,7 @@ npm run build
 | 选项 | 默认 | 说明 |
 |-----|------|------|
 | 粘贴时自动清理 | 开启 | 粘贴内容时自动清理 |
-| 启用快捷键 | 开启 | `Ctrl+Shift+M` |
+| 显示通知 | 开启 | 清理完成后显示通知 |
 | 转换数学公式 | 开启 | LaTeX 格式转换 |
 
 ## ❓ 常见问题
@@ -211,18 +227,23 @@ npm run build
 2. 确保使用 `\(...\)` 或 `\[...\]` 格式
 3. 重启 Obsidian
 
+### Q: 如何设置快捷键？
+1. 进入设置 → 快捷键
+2. 搜索 "Clean Markdown format"
+3. 点击并按下你想要的按键组合
+
 ### Q: 快捷键不生效？
-1. 检查设置中"启用快捷键"是否开启
+1. 确保已在设置 → 快捷键中设置了快捷键
 2. 重启 Obsidian
-3. 检查快捷键冲突
+3. 检查是否与其他插件冲突
 
 ## 🛠️ 开发指南
 
 ### 构建命令
 ```bash
 npm install    # 安装依赖
-npm run dev   # 开发模式
-npm run build # 生产构建
+npm run dev    # 开发模式
+npm run build  # 生产构建
 ```
 
 ### 项目结构
@@ -230,9 +251,9 @@ npm run build # 生产构建
 obsidian-markdown-cleaner/
 ├── main.ts           # 源代码
 ├── main.js           # 构建后的插件
-├── manifest.json     # 插件元数据
-├── package.json      # npm配置
-├── tsconfig.json     # TypeScript配置
+├── manifest.json      # 插件元数据
+├── package.json       # npm配置
+├── tsconfig.json      # TypeScript配置
 ├── esbuild.config.mjs # 构建配置
 └── README.md         # 文档
 ```
@@ -244,6 +265,9 @@ obsidian-markdown-cleaner/
 - 🔧 优化：复杂公式支持
 - 🐛 修复：正则表达式问题
 - 📝 更新：完整中文文档
+
+### v1.0.x
+- 首次发布，包含 Markdown 格式清理功能
 
 ## 🤝 贡献
 
