@@ -36,7 +36,7 @@ export default class MarkdownCleanerPlugin extends Plugin {
 		// 添加快捷键命令
 		this.addCommand({
 			id: 'clean-markdown-format',
-			name: 'Clean Markdown format',
+			name: 'Clean markdown format',
 			editorCheckCallback: (checking: boolean, editor: Editor) => {
 				if (checking) return true;
 				this.cleanSelection(editor);
@@ -174,7 +174,7 @@ export default class MarkdownCleanerPlugin extends Plugin {
 		// 新的正则表达式：清理主要是数字、符号、单位的内容
 		// 匹配：以数字、符号开头，可能包含少量字母（单位）
 		// 不匹配：以字母或中文开头的真正文本
-		result = result.replace(/\*\*([-+]?\d*\.?\d+[°±≈≠ΩµμΑ-Ωα-ω]?[a-zA-Z]{0,2}[\/]?[a-zA-Z]{0,3})\*\*/g, '$1');
+		result = result.replace(/\*\*([-+]?\d*\.?\d+[°±≈≠ΩµμΑ-Ωα-ω]?[a-zA-Z]{0,2}[/]?[a-zA-Z]{0,3})\*\*/g, '$1');
 		
 		// 保留原来的正则表达式作为后备
 		result = result.replace(/\*\*([^a-zA-Z\u4e00-\u9fff*]+?)\*\*/g, '$1');
@@ -284,7 +284,7 @@ class CleanerSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName('Markdown Cleaner')
+			.setName('Settings')
 			.setHeading();
 
 		new Setting(containerEl)
@@ -299,7 +299,7 @@ class CleanerSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Set hotkey')
-			.setDesc('To set a hotkey, go to Settings → Hotkeys, then search for "Clean Markdown format" to bind a hotkey');
+			.setDesc('To set a hotkey, go to Settings → Hotkeys, then search for "Clean markdown format" to bind a hotkey');
 
 		new Setting(containerEl)
 			.setName('Show notification')
