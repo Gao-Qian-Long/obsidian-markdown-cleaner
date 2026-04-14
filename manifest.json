@@ -1,12 +1,10 @@
 {
-	"id": "obsidian-markdown-cleaner",
+	"id": "markdown-cleaner",
 	"name": "Markdown Cleaner",
 	"version": "1.1.0",
 	"minAppVersion": "0.15.0",
-	"description": "清理文本中多余的 Markdown 格式符号，自动转换 LaTeX 数学公式为 Obsidian 兼容格式",
+	"description": "清理文本中多余的 Markdown 格式符号，自动转换 LaTeX 数学公式为兼容格式.",
 	"author": "Gao-Qian-Long",
 	"authorUrl": "https://github.com/Gao-Qian-Long",
-	"fundingUrl": "",
-	"isDesktopOnly": false,
-	"keywords": ["markdown", "cleaner", "formatting", "editor", "math", "latex"]
+	"isDesktopOnly": false
 }
