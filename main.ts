@@ -39,7 +39,6 @@ export default class MarkdownCleanerPlugin extends Plugin {
 		this.addCommand({
 			id: 'clean-markdown-format',
 			name: 'Clean Markdown format',
-			hotkeys: [],
 			editorCheckCallback: (checking: boolean, editor: Editor) => {
 				if (checking) return true;
 				this.cleanSelection(editor);
