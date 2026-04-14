@@ -36,7 +36,7 @@ export default class MarkdownCleanerPlugin extends Plugin {
 		// 添加快捷键命令
 		this.addCommand({
 			id: 'clean-markdown-format',
-			name: 'Clean markdown format',
+			name: 'Clean Markdown format',
 			editorCheckCallback: (checking: boolean, editor: Editor) => {
 				if (checking) return true;
 				this.cleanSelection(editor);
@@ -284,7 +284,7 @@ class CleanerSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName('Settings')
+			.setName('General')
 			.setHeading();
 
 		new Setting(containerEl)
@@ -299,7 +299,7 @@ class CleanerSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Set hotkey')
-			.setDesc('To set a hotkey, go to Settings → Hotkeys, then search for "Clean markdown format" to bind a hotkey');
+			.setDesc('To set a hotkey, go to Settings → Hotkeys, then search for "Clean Markdown format" to bind a hotkey');
 
 		new Setting(containerEl)
 			.setName('Show notification')
