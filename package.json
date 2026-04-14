@@ -1,7 +1,7 @@
 {
 	"name": "obsidian-markdown-cleaner",
-	"version": "1.0.0",
-	"description": "清理文本中多余的 Markdown 格式符号",
+	"version": "1.1.0",
+	"description": "清理文本中多余的 Markdown 格式符号，自动转换 LaTeX 数学公式为 Obsidian 兼容格式",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs --development",
@@ -12,10 +12,22 @@
 		"obsidian",
 		"plugin",
 		"markdown",
-		"cleaner"
+		"cleaner",
+		"formatting",
+		"editor",
+		"math",
+		"latex"
 	],
-	"author": "",
+	"author": "Gao-Qian-Long",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Gao-Qian-Long/obsidian-markdown-cleaner"
+	},
+	"bugs": {
+		"url": "https://github.com/Gao-Qian-Long/obsidian-markdown-cleaner/issues"
+	},
+	"homepage": "https://github.com/Gao-Qian-Long/obsidian-markdown-cleaner#readme",
 	"devDependencies": {
 		"@types/node": "^16.11.6",
 		"esbuild": "^0.14.47",
