@@ -121,7 +121,13 @@ obsidian-markdown-cleaner/
 
 ## 📋 Changelog
 
-### v1.1.0 (Latest)
+### v1.1.1 (Latest)
+- 🐛 Fixed: Code review issues (remove console.log, use setHeading())
+- 🔧 Fixed: Remove default hotkey and unused enableHotkey setting
+- 📝 Updated: Documentation with new hotkey setup instructions
+- 🔧 Fixed: .gitignore issues
+
+### v1.1.0
 - ✨ New: LaTeX math formula auto-conversion
 - 🔧 Enhanced: Complex formula support
 - 🐛 Fixed: Regex matching issues
@@ -260,7 +266,13 @@ obsidian-markdown-cleaner/
 
 ## 📋 更新日志
 
-### v1.1.0（最新）
+### v1.1.1（最新）
+- 🐛 修复：代码审核问题（删除 console.log，使用 setHeading()）
+- 🔧 修复：移除默认快捷键和无用的 enableHotkey 设置项
+- 📝 更新：文档中添加快捷键设置说明
+- 🔧 修复：.gitignore 问题
+
+### v1.1.0
 - ✨ 新增：LaTeX 数学公式自动转换
 - 🔧 优化：复杂公式支持
 - 🐛 修复：正则表达式问题
