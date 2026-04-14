@@ -1,63 +1,90 @@
-# GitHub Release 和插件提交指南
+# GitHub Release 和插件提交指南（已修复）
 
-## 第一步：创建 GitHub Release
+## ✅ 已完成的修复
 
-1. 打开 GitHub 仓库：https://github.com/Gao-Qian-Long/obsidian-markdown-cleaner
-2. 点击 "Releases" → "Create a new release"
-3. 填写信息：
+- [x] 插件 ID 修改为 `markdown-cleaner`（移除 obsidian）
+- [x] 移除 manifest.json 中的 keywords 属性
+- [x] 更新描述（移除 Obsidian 提及，添加句号结尾）
+- [x] 添加 MIT LICENSE 文件
+- [x] 代码已推送并构建
+
+---
+
+## 第一步：创建 GitHub Release（重要！）
+
+1. 打开：https://github.com/Gao-Qian-Long/obsidian-markdown-cleaner/releases/new
+2. 填写信息：
    - **Tag version**: `1.1.0`
    - **Release title**: `v1.1.0`
-   - **Description**: 
-     ```
-     ## v1.1.0 更新内容
-     
-     ✨ 新增：LaTeX 数学公式自动转换功能
-     🔧 优化：复杂公式支持
-     🐛 修复：正则表达式匹配问题
-     📝 更新：完整中英双语文档
-     ```
-4. 点击 "Publish release"
+   - **Description**: 更新内容说明
+3. **重要**：在下方 **"Attach binaries by dropping them here or selecting them"** 区域上传：
+   - `main.js`（在项目根目录）
+   - `manifest.json`（在项目根目录）
+4. 点击 **"Publish release"**
 
-## 第二步：提交到 Obsidian 社区插件列表
+---
 
-### 1. Fork 官方仓库
-访问 https://github.com/obsidianmd/obsidian-releases 并点击 "Fork"
+## 第二步：更新 community-plugins.json
 
-### 2. 编辑 community-plugins.json
-在仓库中找到 `community-plugins.json` 文件，按字母顺序插入以下内容：
-
+修改为以下内容（添加到**文件最末尾**）：
 ```json
 {
-    "id": "obsidian-markdown-cleaner",
+    "id": "markdown-cleaner",
     "name": "Markdown Cleaner",
-    "description": "清理文本中多余的 Markdown 格式符号，自动转换 LaTeX 数学公式为 Obsidian 兼容格式",
+    "description": "清理文本中多余的 Markdown 格式符号，自动转换 LaTeX 数学公式为兼容格式.",
     "author": "Gao-Qian-Long",
     "repo": "Gao-Qian-Long/obsidian-markdown-cleaner"
 }
 ```
 
-### 3. 提交 Pull Request
-- 点击 "Commit changes"
-- 创建 Pull Request 到 `obsidianmd/obsidian-releases`
-- 等待 Obsidian 团队审核（通常需要几天到几周）
+**注意**：确保前一个插件后面有逗号。
+
+---
+
+## 第三步：提交 PR（按照官方模板格式）
+
+### PR 标题：
+```
+Add plugin: Markdown Cleaner
+```
+
+### PR 描述（按照模板格式）：
+
+```markdown
+## Plugin name
+Markdown Cleaner
+
+## Plugin description
+清理文本中多余的 Markdown 格式符号，自动转换 LaTeX 数学公式为兼容格式.
+
+## Does your plugin meet our guidelines?
+- [x] I am the author of this plugin
+- [x] I will provide support for this plugin
+- [x] I have tested this plugin locally
+- [x] This plugin is open source
+- [x] This plugin uses the 'community-plugins.json' file correctly
+- [x] This plugin is not on our rejection list (if you don't know what this means, please ask before submitting)
+```
+
+---
+
+## 第四步：操作步骤
+
+1. Fork 仓库 → 编辑 community-plugins.json → Commit changes → Propose changes
+2. 在 PR 页面：
+   - 点击 **"Preview"** → 选择 **"Community Plugin"**
+   - PR 标题填写：`Add plugin: Markdown Cleaner`
+   - 描述填写上面的模板
+3. 点击 **"Create pull request"**
+
+---
 
 ## 验证清单
 
-在提交前请确认：
 - [x] `manifest.json` 版本为 `1.1.0`
-- [x] GitHub Release 已创建并包含编译后的 `main.js` 和 `manifest.json`
-- [x] 插件在本地测试正常
-- [x] README.md 文档完整
-
-## 注意事项
-
-1. **审核时间**：Obsidian 团队手动审核，可能需要几天到几周
-2. **被拒原因**：
-   - 插件功能过于简单
-   - 包含恶意代码
-   - manifest.json 格式错误
-   - Release 未包含正确文件
-
-3. **后续更新**：
-   - 每次更新版本号后，需要创建新的 Release
-   - 插件会自动从 GitHub 获取更新
+- [x] 插件 ID 为 `markdown-cleaner`
+- [x] 描述以句号结尾（`.`）
+- [x] GitHub Release 已创建，包含 main.js 和 manifest.json 附件
+- [x] LICENSE 文件存在
+- [ ] PR 遵循官方模板格式
+- [ ] 添加到 community-plugins.json 最末尾
