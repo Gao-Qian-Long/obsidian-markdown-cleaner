@@ -301,14 +301,7 @@ class CleanerSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Set hotkey')
-			.setDesc('Click the button below to open hotkey settings, then search for "Clean Markdown format" to bind a hotkey')
-			.addButton(button => button
-				.setButtonText('Open hotkey settings')
-				.onClick(() => {
-					// @ts-ignore - Obsidian internal API
-					this.app.settingsTab.open();
-					new Notice('Search for "Clean Markdown format" in hotkey settings');
-				}));
+			.setDesc('To set a hotkey, go to Settings → Hotkeys, then search for "Clean Markdown format" to bind a hotkey');
 
 		new Setting(containerEl)
 			.setName('Show notification')
