@@ -3,14 +3,12 @@ import { Plugin, PluginSettingTab, Setting, App, Editor, Notice } from 'obsidian
 interface CleanerSettings {
 	autoCleanOnPaste: boolean;
 	showNotification: boolean;
-	enableHotkey: boolean;
 	convertMathFormulas: boolean;
 }
 
 const DEFAULT_SETTINGS: CleanerSettings = {
 	autoCleanOnPaste: true,
 	showNotification: true,
-	enableHotkey: true,
 	convertMathFormulas: true
 };
 
