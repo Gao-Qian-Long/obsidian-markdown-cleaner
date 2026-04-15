@@ -284,7 +284,7 @@ class CleanerSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName('About')
+			.setName('Formatting')
 			.setHeading();
 
 		new Setting(containerEl)
@@ -299,7 +299,7 @@ class CleanerSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Set hotkey')
-			.setDesc('to set a hotkey, go to settings → hotkeys, then search for "Clean Markdown format" to bind a hotkey');
+			.setDesc('Searching the plugin name to bind a hotkey');
 
 		new Setting(containerEl)
 			.setName('Show notification')
