@@ -235,10 +235,18 @@ export default class MarkdownCleanerPlugin extends Plugin {
 		return result;
 	}
 
-	// 查找无效的加粗标签位置
+	/**
+	 * 查找无效的加粗标签位置
+	 * @param text - 要检查的文本
+	 * @param beforeContext - 文本前的上下文（用于边界判断）
+	 * @param afterContext - 文本后的上下文（用于边界判断）
+	 * @returns 需要删除的 ** 位置数组
+	 */
 	private findInvalidBoldPositions(text: string, beforeContext: string = '', afterContext: string = ''): number[] {
 		const positions: number[] = [];
 		const allPositions: number[] = [];
+		// 重置 lastIndex 避免全局正则的匹配位置残留问题
+		this.BOLD_REGEX.lastIndex = 0;
 		let m;
 		while ((m = this.BOLD_REGEX.exec(text)) !== null) {
 			allPositions.push(m.index);
