@@ -20,6 +20,14 @@ function hasCJK(s: string): boolean {
 
 export default class MarkdownCleanerPlugin extends Plugin {
 	settings!: CleanerSettings;
+	
+	// 预编译正则表达式，避免每次调用重新编译
+	private readonly BOLD_REGEX = /\*\*/g;
+	private readonly PUNCT_OR_SPACE_REGEX = /[\s\u3000-\u303f\uff00-\uffef\u2000-\u206f!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/;
+	private readonly NUMBER_UNIT_PATTERN = /\*\*([-+]?\d*\.?\d+[°±≈≠ΩµμΑ-Ωα-ω]?[a-zA-Z]{0,2}[/]?[a-zA-Z]{0,3})\*\*/g;
+	private readonly NON_TEXT_PATTERN = /\*\*([^a-zA-Z\u4e00-\u9fff*]+?)\*\*/g;
+	private readonly MULTIPLE_STARS = /\*{3,}/g;
+	private readonly MULTIPLE_UNDERSCORES = /_{3,}/g;
 
 	async onload() {
 		console.debug('Markdown Cleaner: plugin loading');
@@ -54,11 +62,22 @@ export default class MarkdownCleanerPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		try {
+			const data = await this.loadData();
+			this.settings = Object.assign({}, DEFAULT_SETTINGS, data);
+		} catch (error) {
+			console.error('Markdown Cleaner: error loading settings:', error);
+			this.settings = Object.assign({}, DEFAULT_SETTINGS);
+		}
 	}
 
 	async saveSettings() {
-		await this.saveData(this.settings);
+		try {
+			await this.saveData(this.settings);
+		} catch (error) {
+			console.error('Markdown Cleaner: error saving settings:', error);
+			new Notice('Markdown Cleaner: 保存设置失败');
+		}
 	}
 
 	// 清理选中文本
@@ -132,7 +151,9 @@ export default class MarkdownCleanerPlugin extends Plugin {
 				const lastLineIndex = lines.length - 1;
 				const newCursor = {
 					line: replaceFrom.line + lastLineIndex,
-					ch: lastLineIndex === 0 ? replaceFrom.ch + cleaned.length : lines[lastLineIndex].length
+					ch: lastLineIndex === 0 
+						? replaceFrom.ch + lines[0].length 
+						: lines[lastLineIndex].length
 				};
 				editor.setCursor(newCursor);
 				
@@ -182,19 +203,17 @@ export default class MarkdownCleanerPlugin extends Plugin {
 	cleanMarkdown(text: string, beforeContext: string = '', afterContext: string = ''): string {
 		let result = text;
 		
-		// 新的正则表达式：清理主要是数字、符号、单位的内容
-		// 匹配：以数字、符号开头，可能包含少量字母（单位）
-		// 不匹配：以字母或中文开头的真正文本
-		result = result.replace(/\*\*([-+]?\d*\.?\d+[°±≈≠ΩµμΑ-Ωα-ω]?[a-zA-Z]{0,2}[/]?[a-zA-Z]{0,3})\*\*/g, '$1');
+		// 使用预编译正则清理数字+单位格式 **3.14kg** -> 3.14kg
+		result = result.replace(this.NUMBER_UNIT_PATTERN, '$1');
 		
-		// 保留原来的正则表达式作为后备
-		result = result.replace(/\*\*([^a-zA-Z\u4e00-\u9fff*]+?)\*\*/g, '$1');
+		// 清理非文本格式的后备正则
+		result = result.replace(this.NON_TEXT_PATTERN, '$1');
 
 		// 清理多余的星号和下划线
-		result = result.replace(/\*{3,}/g, (match) => {
+		result = result.replace(this.MULTIPLE_STARS, (match) => {
 			return match.length % 2 === 0 ? '**' : '*';
 		});
-		result = result.replace(/_{3,}/g, (match) => {
+		result = result.replace(this.MULTIPLE_UNDERSCORES, (match) => {
 			return match.length % 2 === 0 ? '__' : '_';
 		});
 
@@ -219,16 +238,13 @@ export default class MarkdownCleanerPlugin extends Plugin {
 	// 查找无效的加粗标签位置
 	private findInvalidBoldPositions(text: string, beforeContext: string = '', afterContext: string = ''): number[] {
 		const positions: number[] = [];
-		const regex = /\*\*/g;
 		const allPositions: number[] = [];
 		let m;
-		while ((m = regex.exec(text)) !== null) {
+		while ((m = this.BOLD_REGEX.exec(text)) !== null) {
 			allPositions.push(m.index);
 		}
 
 		if (allPositions.length === 0) return positions;
-
-		const punctOrSpace = /[\s\u3000-\u303f\uff00-\uffef\u2000-\u206f!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/;
 
 		for (let i = 0; i < allPositions.length - 1; i += 2) {
 			const openPos = allPositions[i];
@@ -256,8 +272,8 @@ export default class MarkdownCleanerPlugin extends Plugin {
 				afterChar = afterContext;
 			}
 
-			const isOpenAtBoundary = !beforeChar || punctOrSpace.test(beforeChar);
-			const isCloseAtBoundary = !afterChar || punctOrSpace.test(afterChar);
+			const isOpenAtBoundary = !beforeChar || this.PUNCT_OR_SPACE_REGEX.test(beforeChar);
+			const isCloseAtBoundary = !afterChar || this.PUNCT_OR_SPACE_REGEX.test(afterChar);
 
 			if (contentHasCJK) {
 				if (!isOpenAtBoundary && !isCloseAtBoundary) {
@@ -307,10 +323,6 @@ class CleanerSettingTab extends PluginSettingTab {
 					this.plugin.settings.autoCleanOnPaste = value;
 					await this.plugin.saveSettings();
 				}));
-
-		new Setting(containerEl)
-			.setName('Set hotkey')
-			.setDesc('Searching the plugin name to bind a hotkey');
 
 		new Setting(containerEl)
 			.setName('Show notification')
