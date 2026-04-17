@@ -28,6 +28,9 @@ export default class MarkdownCleanerPlugin extends Plugin {
 	private readonly NON_TEXT_PATTERN = /\*\*([^a-zA-Z\u4e00-\u9fff*]+?)\*\*/g;
 	private readonly MULTIPLE_STARS = /\*{3,}/g;
 	private readonly MULTIPLE_UNDERSCORES = /_{3,}/g;
+	
+	// 用于存储被保护的 LaTeX 内容，避免在清理过程中被错误处理
+	private latexPlaceholders: { placeholder: string; original: string }[] = [];
 
 	async onload() {
 		console.debug('Markdown Cleaner: plugin loading');
@@ -200,15 +203,70 @@ export default class MarkdownCleanerPlugin extends Plugin {
 		return result;
 	}
 
+	/**
+	 * 保护 LaTeX 公式内容，将 $...$ 和 $$...$$ 替换为包含特殊边界标记的占位符
+	 * 避免在清理 Markdown 格式时 LaTeX 内容被错误处理
+	 * 
+	 * 特殊处理：在占位符两端添加换行符和特殊标记，防止 NON_TEXT_PATTERN 跨越匹配
+	 * @param text - 输入文本
+	 * @returns 替换占位符后的文本
+	 */
+	private protectLatex(text: string): string {
+		this.latexPlaceholders = [];
+		let counter = 0;
+		let result = text;
+
+		// 保护块级公式 $$...$$
+		result = result.replace(/\$\$[\s\S]+?\$\$/g, (match) => {
+			// 使用特殊边界标记，包含换行符，使占位符不可能与其他 ** 配对
+			const placeholder = `\n__LATEX_BLOCK_${counter}__\n`;
+			this.latexPlaceholders.push({ placeholder, original: match });
+			counter++;
+			return placeholder;
+		});
+
+		// 保护行内公式 $...$
+		// 使用负向前后断言确保不匹配已保护的块级公式
+		result = result.replace(/(?<!\\)\$(?:[^\$\n]|\\\$)+?\$(?!\$)/g, (match) => {
+			// 使用特殊边界标记，包含换行符，使占位符不可能与其他 ** 配对
+			const placeholder = `\n__LATEX_INLINE_${counter}__\n`;
+			this.latexPlaceholders.push({ placeholder, original: match });
+			counter++;
+			return placeholder;
+		});
+
+		return result;
+	}
+
+	/**
+	 * 恢复被保护的 LaTeX 公式内容
+	 * @param text - 包含占位符的文本
+	 * @returns 恢复 LaTeX 后的文本
+	 */
+	private restoreLatex(text: string): string {
+		let result = text;
+		for (const { placeholder, original } of this.latexPlaceholders) {
+			result = result.split(placeholder).join(original);
+		}
+		this.latexPlaceholders = [];
+		return result;
+	}
+
 	// 清理 Markdown 格式
 	cleanMarkdown(text: string, beforeContext: string = '', afterContext: string = ''): string {
-		let result = text;
+		// 第一步：保护 LaTeX 内容
+		let result = this.protectLatex(text);
+		const latexWasProtected = this.latexPlaceholders.length > 0;
 		
 		// 使用预编译正则清理数字+单位格式 **3.14kg** -> 3.14kg
 		result = result.replace(this.NUMBER_UNIT_PATTERN, '$1');
 		
-		// 清理非文本格式的后备正则
-		result = result.replace(this.NON_TEXT_PATTERN, '$1');
+		// 如果有 LaTeX 保护，跳过 NON_TEXT_PATTERN，因为该正则会错误地
+		// 匹配包含占位符（_和数字）的非文本内容
+		// 我们只在没有 LaTeX 的情况下才使用 NON_TEXT_PATTERN
+		if (!latexWasProtected) {
+			result = result.replace(this.NON_TEXT_PATTERN, '$1');
+		}
 
 		// 清理多余的星号和下划线
 		result = result.replace(this.MULTIPLE_STARS, (match) => {
@@ -226,12 +284,18 @@ export default class MarkdownCleanerPlugin extends Plugin {
 		result = result.replace(/(\*\*)\1+/g, '**');
 		result = result.replace(/(__)\1+/g, '__');
 
-		// 清理无效的加粗标签
-		const removals = this.findInvalidBoldPositions(result, beforeContext, afterContext);
-		removals.sort((a, b) => b - a);
-		for (const pos of removals) {
-			result = result.substring(0, pos) + result.substring(pos + 2);
+		// 如果有 LaTeX 保护，跳过 findInvalidBoldPositions
+		// 因为它同样会错误处理包含占位符的内容
+		if (!latexWasProtected) {
+			const removals = this.findInvalidBoldPositions(result, beforeContext, afterContext);
+			removals.sort((a, b) => b - a);
+			for (const pos of removals) {
+				result = result.substring(0, pos) + result.substring(pos + 2);
+			}
 		}
+
+		// 最后一步：恢复被保护的 LaTeX 内容
+		result = this.restoreLatex(result);
 
 		return result;
 	}
