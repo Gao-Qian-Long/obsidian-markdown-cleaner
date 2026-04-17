@@ -79,7 +79,7 @@ export default class MarkdownCleanerPlugin extends Plugin {
 			await this.saveData(this.settings);
 		} catch (error) {
 			console.error('Markdown Cleaner: error saving settings:', error);
-			new Notice('Markdown Cleaner: 保存设置失败');
+			new Notice('Markdown Cleaner: Failed to save settings');
 		}
 	}
 
@@ -227,7 +227,7 @@ export default class MarkdownCleanerPlugin extends Plugin {
 
 		// 保护行内公式 $...$
 		// 使用负向前后断言确保不匹配已保护的块级公式
-		result = result.replace(/(?<!\\)\$(?:[^\$\n]|\\\$)+?\$(?!\$)/g, (match) => {
+		result = result.replace(/(?<!\\)\$(?:[^\$\n]|\$)+?\$(?!\$)/g, (match) => {
 			// 使用特殊边界标记，包含换行符，使占位符不可能与其他 ** 配对
 			const placeholder = `\n__LATEX_INLINE_${counter}__\n`;
 			this.latexPlaceholders.push({ placeholder, original: match });
