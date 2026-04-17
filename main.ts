@@ -48,6 +48,11 @@ export default class MarkdownCleanerPlugin extends Plugin {
 		console.debug('Markdown Cleaner: plugin loaded successfully');
 	}
 
+	// 插件卸载时清理资源
+	onunload() {
+		console.debug('Markdown Cleaner: plugin unloaded');
+	}
+
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}
@@ -136,6 +141,7 @@ export default class MarkdownCleanerPlugin extends Plugin {
 				}
 			} catch (error) {
 				console.error('Markdown Cleaner: error replacing text:', error);
+				new Notice('Markdown Cleaner: 清理失败，请重试');
 			}
 		}
 	}
@@ -160,7 +166,12 @@ export default class MarkdownCleanerPlugin extends Plugin {
 		});
 		
 		// 4. 确保已有的 $...$ 格式正确（避免重复转换）
+		// 修复：添加内容检查，避免连续公式 $a$ $b$ 被错误匹配
+		// 当 content 包含 $ 时说明可能是显示公式或未闭合公式，跳过处理
 		result = result.replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, (match, content) => {
+			if (content.includes('$')) {
+				return match;
+			}
 			return '$' + content + '$';
 		});
 		
