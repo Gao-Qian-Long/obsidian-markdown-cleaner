@@ -187,6 +187,7 @@ export default class MarkdownCleanerPlugin extends Plugin {
 		});
 		
 		// 4. 确保已有的 $...$ 格式正确（避免重复转换）
+		// 注意：使用后向断言 (?<!...) 需要 ES2018+ (Chrome 62+, Firefox 78+)
 		// 修复：添加内容检查，避免连续公式 $a$ $b$ 被错误匹配
 		// 当 content 包含 $ 时说明可能是显示公式或未闭合公式，跳过处理
 		result = result.replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, (match, content) => {
